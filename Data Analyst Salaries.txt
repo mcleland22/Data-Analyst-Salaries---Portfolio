@@ -1,0 +1,113 @@
+-- This query is used for data cleaning for a data analytics project to prepare for visualization in Tableau. 
+-- Start by pulling a query of the data to take an overview of the data collected. 
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`;
+
+-- Changing the name of the primary key column 
+ALTER TABLE `my-project-1-358902.job_salaries.data_job_salaries`
+RENAME COLUMN int64_field_0 TO id;
+
+-- Checking the data for any empty cells. 
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE id IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE work_year IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE experience_level IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE employment_type IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE job_title IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE salary_in_usd IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE employee_residence IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE remote_ratio IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE company_location IS NULL;
+
+SELECT *
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE company_size IS NULL;
+-- There are no found NULLs in the columns selected. 
+
+-- Selecting specific data to compare salaries between entry-level data analysts and data scientists with a full-time position.
+-- The data that has been queried would be better visualized in Tableau.
+SELECT id, work_year, experience_level, employment_type, job_title, salary_in_usd
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE experience_level = 'EN'
+  AND employment_type = 'FT'
+  AND (job_title = 'Data Analyst' OR job_title = 'Data Scientist');
+
+-- Selecting data to observe the average salary of data analysts with full-time positions between 2020-2022.
+SELECT work_year, experience_level, employment_type, job_title, ROUND(AVG(salary_in_usd), 2) AS avg_salary
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE job_title = 'Data Analyst'
+  AND employment_type = 'FT'
+GROUP BY work_year, experience_level, employment_type, job_title
+ORDER BY work_year DESC, avg_salary DESC;
+
+-- Selecting data to observe the average salary of data scientists with a full-time position between 2020-2022.
+SELECT work_year, experience_level, employment_type, job_title, ROUND(AVG(salary_in_usd), 2) AS avg_salary
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE job_title = 'Data Scientist'
+  AND employment_type = 'FT'
+GROUP BY work_year, experience_level, employment_type, job_title
+ORDER BY work_year DESC, avg_salary DESC;
+
+-- Selecting data to observe how many employees reside near the company location. 
+SELECT employee_residence, remote_ratio, company_location, company_size
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE employee_residence = company_location;
+-- This query succeeds in displaying employees with matching residence and company.
+-- However,the remote ratio and company size columns would need further filtering. 
+
+--Pulling data to compare company size to average salary in USD. 
+SELECT company_size, company_location, ROUND(AVG(salary_in_usd), 2) AS avg_salary
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+GROUP BY company_size, company_location
+ORDER BY company_size DESC, avg_salary DESC;
+
+-- Finding average salary of data analysts across the world.
+SELECT company_location, ROUND(AVG(salary_in_usd), 2) AS avg_salary
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE job_title = 'Data Analyst'
+  OR job_title = 'Data Scientist'
+  AND employment_type = 'FT'
+GROUP BY company_location;
+
+-- Finding the average salary for data analysts/data scientists between 2020-2022.  
+SELECT job_title, work_year, ROUND(AVG(salary_in_usd), 2) AS avg_salary
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE job_title = 'Data Analyst'
+  OR job_title = 'Data Scientist'
+GROUP BY work_year, job_title;
+
+--Finding the average salary between data analyst titles available in the dataset. 
+SELECT job_title, ROUND(AVG(salary_in_usd), 2) AS avg_salary
+FROM `my-project-1-358902.job_salaries.data_job_salaries`
+WHERE job_title LIKE '%Data Analyst%'
+GROUP BY job_title
+ORDER BY avg_salary;
+
+
+
+
